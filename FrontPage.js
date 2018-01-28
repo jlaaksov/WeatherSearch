@@ -26,6 +26,7 @@ export default class FrontPage extends React.Component {
           color='#656465'
           />
       </View>
+      </View>
     );
   }
 }
@@ -35,7 +36,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: 'center',
     color: '#656565',
-    marginTop: 100
+    marginTop: 100,
+    marginBottom: 15
   },
   container: {
     flex: 1,
@@ -43,13 +45,13 @@ const styles = StyleSheet.create({
     padding: 25
   },
   flowRight: {
-    flowDirection: 'row',
+    flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch'
   },
   searchBar: {
     height: 40,
-    padding: 4,
+    padding: 5,
     marginRight: 5,
     flexGrow: 1,
     fontSize: 18,
