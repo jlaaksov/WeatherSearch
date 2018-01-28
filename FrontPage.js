@@ -16,12 +16,19 @@ export default class FrontPage extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      searchLocation: 'oulu'
+      searchLocation: 'Oulu',
+      currentCity: 'Oulu',
+      weatherType: "Clear",
+      temperature: -5,
+      isLoading: false,
+      message: '',
     };
   }
 
   render() {
     console.log('FrontPage.render');
+    const loadingIcon = this.state.isLoading ? <ActivityIndicator size='large' /> : null;
+
     return (
       <View style={styles.container}>
       <Text style={styles.welcomeText}>Show me the weather in...</Text>
@@ -32,28 +39,69 @@ export default class FrontPage extends React.Component {
           placeholder='Enter location'
           onChange={this._onSearchLocationChanged}/>
         <Button
-          onPress={() => {}}
+          onPress={this._onSearchButtonPressed}
           title='Search'
           color='#656465'
           />
+      </View>
+      <Text style={styles.errorMessage}>{this.state.message}</Text>
+      <View style={styles.loadingIconContainer}>
+      {loadingIcon}
+      </View>
+      <View style={styles.weatherContainer}>
+        <Text style={styles.temperatureText}>{this.state.temperature}</Text>
       </View>
       </View>
     );
   }
 
   _onSearchLocationChanged = (event) => {
-    console.log('new location event');
+    //console.log('new location event');
     this.setState({ searchLocation: event.nativeEvent.text});
-    console.log('Previous location: ' +this.state.searchLocation+ ', New location: ' +event.nativeEvent.text);
+    //console.log('Previous location: ' +this.state.searchLocation+ ', New location: ' +event.nativeEvent.text);
   };
+
+  //TODO: Stop using hardcoded values
+  _onSearchButtonPressed = () => {
+    const search = 'http://api.openweathermap.org/data/2.5/weather?q=' +this.state.searchLocation +'&units=metric&APPID=f6166b4126c356a085cd8d2a357fa423';
+    console.log('search url: ' +search);
+    this._performSearch(search);
+  };
+
+  _performSearch = (search) => {
+    console.log('_performSearch called');
+    this.setState({isLoading: true});
+
+    fetch(search)
+      .then(response => response.json())
+      .then((response) =>  {
+        this.setState({isLoading: false, message: ' '});
+        //console.log('Response: ' + response.weather.description );
+        if(response.cod == 200) {
+          console.log('Found weather for ' +response.name );
+          this.setState({currentCity: response.name});
+          this.setState({temperature: response.main.temp});
+          this.setState({weatherType: response.weather.main});
+        }else {
+          this.setState({message: 'Location not found, try again.'});
+          console.log('Location not found');
+          this.setState({currentCity: '-'});
+          this.setState({temperature: 0});
+          this.setState({weatherType: '-'});
+        }
+      });
+  };
+
 }
+
+
 
 const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 24,
     textAlign: 'center',
     color: '#656565',
-    marginTop: 100,
+    marginTop: 50,
     marginBottom: 15
   },
   container: {
@@ -77,4 +125,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     color: '#656565'
   },
+  loadingIconContainer: {
+    marginTop: 100
+  },
+  errorMessage: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 40
+  },
+  weatherContainer: {
+    flex: 1
+  },
+  temperatureText: {
+    fontSize: 40,
+    textAlign: 'center'
+  }
 });
