@@ -12,14 +12,25 @@ import {
 } from 'react-native';
 
 export default class FrontPage extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      searchLocation: 'oulu'
+    };
+  }
+
   render() {
+    console.log('FrontPage.render');
     return (
       <View style={styles.container}>
       <Text style={styles.welcomeText}>Show me the weather in...</Text>
       <View style={styles.flowRight}>
         <TextInput
           style={styles.searchBar}
-          placeholder='Enter location' />
+          value={this.state.searchLocation}
+          placeholder='Enter location'
+          onChange={this._onSearchLocationChanged}/>
         <Button
           onPress={() => {}}
           title='Search'
@@ -29,6 +40,12 @@ export default class FrontPage extends React.Component {
       </View>
     );
   }
+
+  _onSearchLocationChanged = (event) => {
+    console.log('new location event');
+    this.setState({ searchLocation: event.nativeEvent.text});
+    console.log('Previous location: ' +this.state.searchLocation+ ', New location: ' +event.nativeEvent.text);
+  };
 }
 
 const styles = StyleSheet.create({
