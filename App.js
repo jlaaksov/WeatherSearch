@@ -7,12 +7,14 @@ import FrontPage from './FrontPage';
 export default class App extends React.Component <{}> {
   render() {
     return (
-      <NavigatorIOS
+    /*  <NavigatorIOS
         style={styles.container}
         initialRoute={{
           title: 'Front Page',
           component: FrontPage,
-        }}/>
+        }}/>*/
+
+      <FrontPage/>
     );
   }
 }

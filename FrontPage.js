@@ -16,10 +16,12 @@ export default class FrontPage extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      searchLocation: 'Oulu',
-      currentCity: 'Oulu',
-      weatherType: "Clear",
-      temperature: -5,
+      searchLocation: '',
+      currentCity: '-',
+      weatherType: '',
+      temperature: '',
+      description: '',
+      wind: '',
       isLoading: false,
       message: '',
     };
@@ -31,17 +33,19 @@ export default class FrontPage extends React.Component {
 
     return (
       <View style={styles.container}>
-      <Text style={styles.welcomeText}>Show me the weather in...</Text>
+      <Image source={require('./Resources/logo.png')} style={styles.image}/>
+      <Text style={styles.welcomeText}>Show me the weather in</Text>
       <View style={styles.flowRight}>
         <TextInput
           style={styles.searchBar}
           value={this.state.searchLocation}
+          placeholderTextColor='#FAFAFA'
           placeholder='Enter location'
           onChange={this._onSearchLocationChanged}/>
         <Button
           onPress={this._onSearchButtonPressed}
           title='Search'
-          color='#656465'
+          color='#FAFAFA'
           />
       </View>
       <Text style={styles.errorMessage}>{this.state.message}</Text>
@@ -49,7 +53,11 @@ export default class FrontPage extends React.Component {
       {loadingIcon}
       </View>
       <View style={styles.weatherContainer}>
+        <Text style={styles.nowText}>Weather now in</Text>
+        <Text style={styles.locationText}>{this.state.currentCity}</Text>
         <Text style={styles.temperatureText}>{this.state.temperature}</Text>
+        <Text style={styles.description}>Condition: {this.state.description}</Text>
+        <Text style={styles.wind}>Wind speed: {this.state.wind} m/s</Text>
       </View>
       </View>
     );
@@ -76,12 +84,14 @@ export default class FrontPage extends React.Component {
       .then(response => response.json())
       .then((response) =>  {
         this.setState({isLoading: false, message: ' '});
-        //console.log('Response: ' + response.weather.description );
         if(response.cod == 200) {
           console.log('Found weather for ' +response.name );
           this.setState({currentCity: response.name});
           this.setState({temperature: response.main.temp});
           this.setState({weatherType: response.weather.main});
+          this.setState({description: response.weather[0].main});
+          console.log(response.weather[0].description);
+          this.setState({wind: response.wind.speed});
         }else {
           this.setState({message: 'Location not found, try again.'});
           console.log('Location not found');
@@ -97,17 +107,22 @@ export default class FrontPage extends React.Component {
 
 
 const styles = StyleSheet.create({
+  image: {
+    marginTop: 20,
+    width: 199,
+    height: 122
+  },
   welcomeText: {
     fontSize: 24,
     textAlign: 'center',
-    color: '#656565',
-    marginTop: 50,
+    marginTop: 20,
     marginBottom: 15
   },
   container: {
-    flex: 1,
+    flex: 0.35,
     alignItems: 'center',
-    padding: 25
+    padding: 25,
+    backgroundColor: '#20A7DB'
   },
   flowRight: {
     flexDirection: 'row',
@@ -119,25 +134,41 @@ const styles = StyleSheet.create({
     padding: 5,
     marginRight: 5,
     flexGrow: 1,
-    fontSize: 18,
-    borderWidth: 1,
-    borderColor: '#656565',
+    fontSize: 20,
+    borderWidth: 2,
+    borderColor: '#FAFAFA',
     borderRadius: 8,
-    color: '#656565'
+    color: '#FAFAFA'
   },
   loadingIconContainer: {
-    marginTop: 100
+    marginTop: 10
   },
   errorMessage: {
     fontSize: 18,
     textAlign: 'center',
-    marginTop: 40
   },
   weatherContainer: {
-    flex: 1
+    flex: 1,
+    marginTop: 30
+  },
+  nowText: {
+    fontSize: 24,
+    textAlign: 'center'
+  },
+  locationText: {
+    fontSize: 48,
+    textAlign: 'center'
   },
   temperatureText: {
-    fontSize: 40,
+    fontSize: 96,
     textAlign: 'center'
-  }
+  },
+  description: {
+    fontSize: 24,
+    textAlign: 'center'
+  },
+  wind: {
+    fontSize: 24,
+    textAlign: 'center'
+  },
 });
